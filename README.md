@@ -4,6 +4,10 @@ G-Scores is a full-stack dashboard for the Golden Owl web developer intern assig
 
 The application is designed for a large, mostly static dataset with more than 1 million exam records. Heavy aggregations are precomputed after seeding, so dashboard APIs stay fast and lightweight in production.
 
+## Live Demo
+
+[https://webdev-intern-assignment-3-kappa.vercel.app/tra-cuu](https://webdev-intern-assignment-3-kappa.vercel.app/tra-cuu)
+
 ## Preview
 
 ### Score Lookup
@@ -159,6 +163,10 @@ npm run build
 ```
 
 ## Vercel Deployment
+
+Live demo:
+
+[https://webdev-intern-assignment-3-kappa.vercel.app/tra-cuu](https://webdev-intern-assignment-3-kappa.vercel.app/tra-cuu)
 
 1. Create a PostgreSQL database on Neon, Supabase, or another Vercel-compatible provider.
 2. Add the production `DATABASE_URL` to the Vercel project environment variables.
