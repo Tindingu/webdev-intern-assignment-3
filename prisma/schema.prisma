@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ExamResult {
+  id          Int      @id @default(autoincrement())
+  sbd         String   @unique
+  toan        Decimal? @db.Decimal(4, 2)
+  nguVan      Decimal? @map("ngu_van") @db.Decimal(4, 2)
+  ngoaiNgu    Decimal? @map("ngoai_ngu") @db.Decimal(4, 2)
+  vatLi       Decimal? @map("vat_li") @db.Decimal(4, 2)
+  hoaHoc      Decimal? @map("hoa_hoc") @db.Decimal(4, 2)
+  sinhHoc     Decimal? @map("sinh_hoc") @db.Decimal(4, 2)
+  lichSu      Decimal? @map("lich_su") @db.Decimal(4, 2)
+  diaLi       Decimal? @map("dia_li") @db.Decimal(4, 2)
+  gdcd        Decimal? @db.Decimal(4, 2)
+  maNgoaiNgu  String?  @map("ma_ngoai_ngu")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("exam_results")
+}
+
+model ScoreReport {
+  id      Int    @id @default(autoincrement())
+  subject String @unique
+  gte8    Int    @map("gte_8")
+  gte6lt8 Int    @map("gte_6_lt_8")
+  gte4lt6 Int    @map("gte_4_lt_6")
+  lt4     Int    @map("lt_4")
+
+  @@map("score_reports")
+}
+
+model TopGroupReport {
+  id           Int     @id @default(autoincrement())
+  group        String
+  rank         Int
+  sbd          String
+  subjectOne   Decimal @map("subject_one") @db.Decimal(4, 2)
+  subjectTwo   Decimal @map("subject_two") @db.Decimal(4, 2)
+  subjectThree Decimal @map("subject_three") @db.Decimal(4, 2)
+  total        Decimal @db.Decimal(5, 2)
+
+  @@unique([group, rank])
+  @@index([group])
+  @@map("top_group_reports")
+}

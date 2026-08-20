@@ -1,65 +1,202 @@
 # G-Scores
 
-This is the instruction for web developer intern assignment at [Golden Owl](https://goldenowl.asia). You will build a simple web.
+G-Scores is a full-stack dashboard for the Golden Owl web developer intern assignment. It imports Vietnam THPT 2024 exam scores into PostgreSQL and provides a polished interface for score lookup, subject analytics, and top rankings by exam group.
 
-Web template example. Hope you will make it more beautiful !!!
+The application is designed for a large, mostly static dataset with more than 1 million exam records. Heavy aggregations are precomputed after seeding, so dashboard APIs stay fast and lightweight in production.
 
-![template example](./screenshots/mockup-ui.png) 
-# Requirements
-1. From the raw data file ([diem_thi_thpt_2024.csv](./dataset/diem_thi_thpt_2024.csv)) save it into the database with the appropriate structure
+## Preview
 
-2. Your application should have at least features in [Must have](#must-have), things in [Nice to have](#nice-to-have) is optional (but yeah, it's attractive if you have).
+### Score Lookup
 
-### Must have:
-- The conversion of raw data into the database must be coded and located in this source code. (**hint**: recommend use migration and seeder)
-- Write a feature to check score from registration number input
-- Write a feature report. There will be 4 levels including: >=8 points, 8 points > && >=6 points, 6 points > && >= 4 points, < 4 points
-    - Statistics of the number of students with scores in the above 4 levels by subjects. (Chart)
-- List top 10 students of group A including (math, physics, chemistry)
-### Nice to have:
+Search by registration number and view subject scores with level classification.
 
-- Responsive design (look good on all devices: desktops, tablets & mobile phones).
-- Setup project use Docker.
-- Deploy the application to go live.
+![Score lookup](./images/trang-tra-cuu.png)
 
-# Technical Requirements
+### Reports Dashboard
 
-### Frontend
-You can use any front-end library/framework like React, Angular, Vue, ... or just simple things with HTML + CSS + Javascript (JQuery).
-- For JS intern use React you need to have: 
-  * React Hooks
-- Fonts (optional);
-  - [https://fonts.google.com/specimen/Rubik?query=Rubik](https://fonts.google.com/specimen/Rubik?query=Rubik)
-- You can use some available interfaces such as: [AdminLTe](https://adminlte.io/), [TailAdmin](https://tailadmin.com/)...
-  
-### Backend: 
-Choose one of your applied back-end libraries/frameworks: Maybe Laravel(PHP), Ruby on Rails, NestJS (NodeJs), Django (Python), unlimited framework... or a structure that you come up with yourselt. 
-- **Mandatory** use of **OOP programming** for managing subjects.
-- Need form validation and logic tightening.
-- For NodeJs, use TypeScript is a plus.
-- Use ORM for interacting with Database.
-- Database: You can use postgreSQL, Mysql, mongoDB... to manage or cache the data. 
+Explore score distribution across subjects through precomputed charts and summary cards.
 
-### Deployment
-Some providers allow free deployment for the trial version  (note: Maybe some suppliers will update their policies and prices)
+![Reports dashboard overview](./images/trang-bao-cao-1.png)
+![Reports dashboard charts](./images/trang-bao-cao-2.png)
+![Reports dashboard details](./images/trang-bao-cao-3.png)
 
-- Heroku - https://heroku.com - Deploying Front & Backend
-- Vercel (Zeit) - https://vercel.com - Deploying Front & Backend apps at free of cost
-- Fly - https://fly.io - Deploying Front & Backend apps at free of cost
-- Deta - https://deta.sh - Deploying Node.js and Python apps and APIs. They support most web frameworks like Express, Koa, Flask, and FastAPI. They also provide a very fast and powerful NoSQL database for free.
-- Heliohost - https://heliohost.org - PHP, Ruby on rails, perl, django, java(jsp)
-- `...`
-# Submission
+### Top Exam Groups
 
-After completing the assignment, please push the source code to remote repository (github/gitlab), then send us the link to your repository.
+View top 10 students for groups A, B, C, and D. Students with the same total score share the same medal color.
 
-Don't forget to add `README.md` which includes guide to run your project locally and demo link.
+![Top 10 group A](./images/top10-khoi-a.png)
+![Top 10 group B](./images/top10-khoi-b.png)
+![Top 10 group C](./images/top10-khoi-c.png)
+![Top 10 group D](./images/top10-khoi-d.png)
 
+### Theme And Language
 
-**GOOD LUCK!!!**
+The UI supports light/dark mode and Vietnamese/English switching.
 
-![Your Code Work](./screenshots/meme.png)
+![English interface](./images/giao-dien-tieng-anh.png)
+![Dark interface](./images/giao-dien-toi.png)
 
-# Contributors
+## Main Features
 
-- Edric Cao (from GO)
+- Import `diem_thi_thpt_2024.csv` into PostgreSQL with Prisma migrations and seed script.
+- Search exam scores by registration number with validation.
+- Report score distribution by subject across 4 levels:
+  - `>= 8`
+  - `>= 6 and < 8`
+  - `>= 4 and < 6`
+  - `< 4`
+- Display charts for subject-level statistics.
+- Display top 10 rankings for exam groups A/B/C/D.
+- Vietnamese-first app routes:
+  - `/tra-cuu`
+  - `/bao-cao`
+  - `/top-khoi-thi`
+- Responsive dashboard layout for desktop, tablet, and mobile.
+- Light/dark mode and Vietnamese/English language switching.
+- Unit tests for domain logic, validation, group lookup, and ranking medals.
+
+## Technical Highlights
+
+- **OOP subject layer**: `Subject` encapsulates subject metadata and behavior such as score extraction, validation, and classification.
+- **TypeScript**: used across frontend, backend routes, Prisma seed scripts, and tests.
+- **ORM**: Prisma manages schema, migrations, and database access.
+- **Precision-safe scores**: scores are stored as PostgreSQL `Decimal(4,2)` instead of floating point numbers.
+- **Precomputed reports**:
+  - `score_reports` stores subject-level distribution counts.
+  - `top_group_reports` stores top rankings for groups A/B/C/D.
+- **Production-ready deployment flow**: Next.js app on Vercel with PostgreSQL on Neon.
+
+## Tech Stack
+
+- Next.js App Router
+- React Hooks
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- Tailwind CSS
+- Recharts
+- Zod
+- Vitest
+
+## Data Design
+
+Runtime report APIs do not scan the full `exam_results` table.
+
+- `exam_results`: one row per student, nullable decimal score columns for each subject.
+- `score_reports`: precomputed subject score-level reports.
+- `top_group_reports`: precomputed top 10 rankings for groups A/B/C/D.
+
+The CSV import is intentionally handled by a local seed script because the dataset is large and mostly static.
+
+## Getting Started
+
+Copy the environment file:
+
+```bash
+cp .env.example .env
+```
+
+Set `DATABASE_URL` in `.env`:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create the database schema:
+
+```bash
+npm run db:migrate
+```
+
+Import the CSV data and generate precomputed reports:
+
+```bash
+npm run db:seed
+```
+
+If an import is interrupted, resume from an existing row count:
+
+```bash
+SEED_SKIP_ROWS=1060000 npm run db:seed
+```
+
+Run the app locally:
+
+```bash
+npm run dev
+```
+
+Open:
+
+```txt
+http://localhost:3000
+```
+
+The root route redirects to `/tra-cuu`.
+
+For LAN testing on another device, set comma-separated dev origins in `.env`:
+
+```env
+ALLOWED_DEV_ORIGINS="YOUR_LAN_IP"
+```
+
+## Useful Commands
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run db:studio
+npm run lint
+npm run test
+npm run build
+```
+
+## Vercel Deployment
+
+1. Create a PostgreSQL database on Neon, Supabase, or another Vercel-compatible provider.
+2. Add the production `DATABASE_URL` to the Vercel project environment variables.
+3. Run migrations against the production database:
+
+```bash
+npx prisma migrate deploy
+```
+
+4. Seed the production database from your local machine using the production `DATABASE_URL`:
+
+```bash
+npm run db:seed
+```
+
+5. Deploy the project to Vercel.
+
+## Project Structure
+
+```txt
+prisma/
+  schema.prisma
+  seed.ts
+src/
+  app/
+    api/
+      students/[sbd]/route.ts
+      reports/score-levels/route.ts
+      reports/top-groups/route.ts
+    tra-cuu/page.tsx
+    bao-cao/page.tsx
+    top-khoi-thi/page.tsx
+  components/
+  lib/
+    subjects/
+tests/
+  unit/
+images/
+dataset/
+  diem_thi_thpt_2024.csv
+```

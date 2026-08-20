@@ -1,0 +1,4 @@
+-- Intentionally left as a no-op.
+-- The first version attempted to add group B/C/D total columns, but Neon free
+-- tier storage limits rejected the backfill. A later migration adds a compact
+-- top_group_reports table instead.
